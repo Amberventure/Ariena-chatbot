@@ -1701,7 +1701,21 @@ for (const [key, value] of Object.entries(payload)) {
         return;
       }
       closeCart();
-      detectRoomFromURL();
+
+// ✅ Use POST verify (CORS-safe) — no GET, no preflight
+const urlParams = new URLSearchParams(window.location.search);
+const tokenFromUrl = urlParams.get('token');
+if (tokenFromUrl) {
+  verifyTokenViaPost(tokenFromUrl);
+  return;
+}
+
+// No token — show QR required screen
+localStorage.removeItem('roomToken');
+localStorage.removeItem('roomNumber');
+localStorage.removeItem('roomFromToken');
+document.getElementById('roomStatusBadge').textContent = '❌ No Token';
+showQrRequiredScreen();
     }
 
    function detectRoomFromURL() {
@@ -1771,6 +1785,39 @@ for (const [key, value] of Object.entries(payload)) {
   localStorage.removeItem('roomFromToken');
   document.getElementById('roomStatusBadge').textContent = '❌ No Token';
   showQrRequiredScreen();
+}
+    function verifyTokenViaPost(token) {
+  document.getElementById('roomStatusBadge').textContent = '⏳ Verifying...';
+  document.getElementById('chatMessages').innerHTML = '';
+  addMessage('🔍 Verifying your room access...', 'bot');
+
+  // Build URL-encoded body — this is the ONLY way Apps Script accepts cross-origin POST
+  const body = 'action=verify&token=' + encodeURIComponent(token);
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (response) {
+    console.log('📥 Verify response:', response);
+    if (response && response.success) {
+      roomToken = token;
+      localStorage.setItem('roomNumber', response.roomNumber);
+      localStorage.setItem('roomToken', token);
+      localStorage.setItem('roomFromToken', 'true');
+      onVerified(response.roomNumber);
+    } else {
+      onVerifyFailed(response && response.error);
+    }
+  })
+  .catch(function (err) {
+    console.error('❌ Verify failed:', err);
+    document.getElementById('roomStatusBadge').textContent = '❌ Error';
+    document.getElementById('chatMessages').innerHTML = '';
+    addMessage('❌ ' + (err.message || 'Failed to verify token'), 'system');
+  });
 }
 
     window.onload = init;
