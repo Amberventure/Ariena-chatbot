@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html>
+<head> 
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARIENA - The Boutique Hotel | Concierge & Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cream:#faf8f3;
+      --sage:#e7ede4;
+      --sage-deep:#4a5d4a;
+      --ink:#2b2420;
+      --gold:#c39a56;
+      --gold-soft:#eadfc7;
+      --veg:#2e7d46;
+      --nonveg:#b3413a;
+      --white:#ffffff;
+      --line:#e7e2d8;
+      --shadow: 0 12px 32px rgba(43,36,32,0.12);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body{
+      font-family:'Inter', -apple-system, sans-serif;
+      background:#dfe4dc;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      color:var(--ink);
+    }
+    .app{
+      width:100%;
+      max-width:430px;
+      height:760px;
+      background:var(--cream);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      position:relative;
+    }
+    .app-header{
+      background:linear-gradient(135deg,#3f4f3f 0%, #5d7357 100%);
+      color:var(--white);
+      padding:18px 20px 16px;
+      flex-shrink:0;
+      position:relative;
+    }
+    .app-header::after{
+      content:"";
+      position:absolute; left:0; right:0; bottom:-1px; height:14px;
+      background:var(--cream);
+      border-radius:16px 16px 0 0;
+    }
+    .brand-row{ display:flex; justify-content:space-between; align-items:flex-start; }
+    .brand-name{ font-family:'Playfair Display',serif; font-size:21px; font-weight:700; letter-spacing:0.5px; }
+    .brand-sub{ font-size:11px; opacity:0.85; letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+    .status-pill{ font-size:11px; background:rgba(255,255,255,0.18); padding:4px 10px; border-radius:20px; font-weight:500; white-space:nowrap; }
+    .room-row{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:rgba(255,255,255,0.12); border-radius:12px; padding:8px 12px; }
+    .room-row .label{ font-size:11px; opacity:0.85; }
+    .room-row .room-number{ font-size:16px; font-weight:700; }
+    .room-badge{ font-size:10px; padding:3px 10px; border-radius:20px; background:var(--gold); color:var(--ink); font-weight:700; }
+    .guest-name-display{ font-size:11px; opacity:0.9; margin-left:8px; }
+    .login-overlay{
+      position:absolute;
+      inset:0;
+      background:rgba(43,36,32,0.75);
+      z-index:100;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+      backdrop-filter:blur(4px);
+      transition:opacity 0.4s ease;
+    }
+    .login-overlay.hidden{
+      opacity:0;
+      pointer-events:none;
+    }
+    .login-box{
+      background:var(--cream);
+      border-radius:24px;
+      padding:32px 28px;
+      max-width:360px;
+      width:100%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.4);
+      transform:scale(1);
+      transition:transform 0.3s ease;
+    }
+    .login-overlay.hidden .login-box{
+      transform:scale(0.9);
+    }
+    .login-box .logo-icon{
+      font-size:42px;
+      text-align:center;
+      margin-bottom:8px;
+    }
+    .login-box h2{
+      font-family:'Playfair Display',serif;
+      font-size:22px;
+      text-align:center;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+    .login-box .sub{
+      text-align:center;
+      color:#8a8378;
+      font-size:13px;
+      margin-bottom:20px;
+    }
+    .login-box .input-group{
+      margin-bottom:14px;
+    }
+    .login-box .input-group label{
+      display:block;
+      font-size:12px;
+      font-weight:600;
+      color:#6b6455;
+      margin-bottom:4px;
+    }
+    .login-box .input-group input{
+      width:100%;
+      padding:12px 14px;
+      border:1.5px solid var(--line);
+      border-radius:12px;
+      font-size:14px;
+      font-family:'Inter', sans-serif;
+      outline:none;
+      background:#fff;
+      transition:border-color 0.2s;
+    }
+    .login-box .input-group input:focus{
+      border-color:var(--sage-deep);
+    }
+    .login-box .input-group input.error{
+      border-color:#b3413a;
+      background:#fff5f5;
+    }
+    .login-box .error-msg{
+      color:#b3413a;
+      font-size:11px;
+      margin-top:4px;
+      display:none;
+    }
+    .login-box .error-msg.show{ display:block; }
+    .login-box .btn-login{
+      width:100%;
+      padding:14px;
+      background:var(--sage-deep);
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      font-family:'Inter', sans-serif;
+      transition:background 0.2s, transform 0.1s;
+    }
+    .login-box .btn-login:hover{ background:#3d503d; }
+    .login-box .btn-login:active{ transform:scale(0.97); }
+    .login-box .btn-login:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+    .login-box .btn-login .spinner{
+      display:inline-block;
+      width:16px;
+      height:16px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin 0.7s linear infinite;
+      vertical-align:middle;
+      margin-right:8px;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+    .login-box .privacy-note{
+      font-size:10.5px;
+      color:#a39c8c;
+      text-align:center;
+      margin-top:14px;
+    }
+    .qr-pulse{
+      width:64px; height:64px; border-radius:50%;
+      background:var(--sage); display:flex; align-items:center; justify-content:center;
+      margin:0 auto 14px; animation:qrPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes qrPulse{
+      0%,100%{ box-shadow:0 0 0 0 rgba(74,93,74,0.25); }
+      50%{ box-shadow:0 0 0 14px rgba(74,93,74,0); }
+    }
+    .view-tabs{
+      display:flex;
+      background:var(--cream);
+      border-bottom:1px solid var(--line);
+      flex-shrink:0;
+    }
+    .view-tab{
+      flex:1;
+      text-align:center;
+      padding:12px 0 10px;
+      font-size:13px;
+      font-weight:600;
+      color:#8a8378;
+      cursor:pointer;
+      border-bottom:2px solid transparent;
+      transition:0.2s;
+    }
+    .view-tab.active{ color:var(--sage-deep); border-bottom-color:var(--gold); }
+    .view-tab.disabled{ opacity:0.4; cursor:not-allowed; }
+    .chat-view{ display:flex; flex-direction:column; flex:1; min-height:0; }
+    .chat-messages{ flex:1; overflow-y:auto; padding:16px; }
+    .message{ margin-bottom:10px; padding:11px 15px; border-radius:16px; max-width:85%; font-size:13.5px; line-height:1.45; animation:fadeIn 0.25s ease; }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+    .message.user{ background:var(--sage-deep); color:#fff; margin-left:auto; border-bottom-right-radius:4px; }
+    .message.bot{ background:#fff; border:1px solid var(--line); margin-right:auto; border-bottom-left-radius:4px; }
+    .message.system{ background:var(--gold-soft); color:#7a5b1e; text-align:center; width:100%; max-width:100%; border:1px solid var(--gold); }
+    .message .timestamp{ font-size:9.5px; opacity:0.55; margin-top:5px; display:block; }
+    .typing-indicator{ display:none; padding:10px 15px; color:#8a8378; font-style:italic; font-size:12.5px; background:#fff; border-radius:16px; border:1px solid var(--line); max-width:70%; margin:0 16px 10px; }
+    .typing-indicator .dot{ display:inline-block; width:6px; height:6px; background:#b7b1a4; border-radius:50%; margin-left:3px; animation:bounce 1.4s infinite both; }
+    .typing-indicator .dot:nth-child(2){ animation-delay:0.2s; }
+    .typing-indicator .dot:nth-child(3){ animation-delay:0.4s; }
+    @keyframes bounce{ 0%,80%,100%{transform:scale(0.6);} 40%{transform:scale(1);} }
+    .quick-replies{ display:flex; gap:7px; padding:8px 16px 10px; flex-wrap:wrap; border-top:1px solid var(--line); flex-shrink:0; }
+    .quick-reply-btn{ padding:6px 12px; background:#fff; border:1px solid var(--line); border-radius:20px; font-size:11.5px; cursor:pointer; color:var(--ink); }
+    .quick-reply-btn:hover{ background:var(--sage-deep); color:#fff; border-color:var(--sage-deep); }
+    .quick-reply-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+    .chat-input{ padding:12px 16px; background:#fff; border-top:1px solid var(--line); display:flex; gap:8px; flex-shrink:0; }
+    .chat-input input{ flex:1; padding:11px 14px; border:1.5px solid var(--line); border-radius:12px; font-size:13.5px; outline:none; font-family:inherit; }
+    .chat-input input:focus{ border-color:var(--sage-deep); }
+    .chat-input input:disabled{ background:#f5f3ef; cursor:not-allowed; }
+    .chat-input button{ padding:11px 20px; background:var(--sage-deep); color:#fff; border:none; border-radius:12px; font-weight:600; font-size:13px; cursor:pointer; }
+    .chat-input button:disabled{ opacity:0.5; cursor:not-allowed; }
+    .menu-view{ display:none; flex-direction:column; flex:1; min-height:0; position: relative; overflow: hidden; }
+    .menu-toolbar{ padding:12px 16px; flex-shrink:0; background:var(--cream); border-bottom:1px solid var(--line); }
+    .search-box{ position:relative; margin-bottom:10px; }
+    .search-box input{
+      width:100%; padding:10px 14px 10px 36px; border-radius:12px; border:1.5px solid var(--line);
+      font-size:13px; font-family:inherit; outline:none; background:#fff;
+    }
+    .search-box input:focus{ border-color:var(--sage-deep); }
+    .search-box .icon{ position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; opacity:0.5; }
+    .filter-row{ display:flex; gap:8px; }
+    .veg-filter{
+      display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:20px;
+      border:1.5px solid var(--line); background:#fff; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--ink);
+    }
+    .veg-filter.active-veg{ border-color:var(--veg); background:#eaf6ec; color:var(--veg); }
+    .veg-filter.active-nonveg{ border-color:var(--nonveg); background:#fbeceb; color:var(--nonveg); }
+    .veg-dot{ width:10px; height:10px; border:1.5px solid var(--veg); border-radius:2px; position:relative; flex-shrink:0; }
+    .veg-dot::after{ content:""; position:absolute; inset:2px; background:var(--veg); border-radius:50%; }
+    .nonveg-dot{ width:10px; height:10px; border:1.5px solid var(--nonveg); border-radius:2px; position:relative; flex-shrink:0; }
+    .nonveg-dot::after{ content:""; position:absolute; inset:2px; background:var(--nonveg); border-radius:50%; }
+    .cat-nav{ display:flex; gap:8px; overflow-x:auto; padding:10px 16px; flex-shrink:0; background:var(--cream); border-bottom:1px solid var(--line); scrollbar-width:none; }
+    .cat-nav::-webkit-scrollbar{ display:none; }
+    .cat-chip{ flex-shrink:0; padding:7px 14px; border-radius:20px; background:#fff; border:1px solid var(--line); font-size:11.5px; font-weight:600; white-space:nowrap; cursor:pointer; color:#6b6455; }
+    .cat-chip.active{ background:var(--sage-deep); color:#fff; border-color:var(--sage-deep); }
+    .menu-list{ flex:1; overflow-y:auto; padding:4px 16px 90px; }
+    .menu-section{ margin-top:16px; }
+    .menu-section:first-child{ margin-top:12px; }
+    .menu-section-title{ font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--sage-deep); display:flex; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1.5px solid var(--gold-soft); margin-bottom:10px; }
+    .menu-section-title .count{ font-size:10.5px; font-weight:600; color:#a39c8c; margin-left:auto; font-family:'Inter'; }
+    .item-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 13px; margin-bottom:10px; display:flex; gap:10px; align-items:flex-start; }
+    .item-main{ flex:1; min-width:0; }
+    .item-top{ display:flex; align-items:center; gap:6px; margin-bottom:3px; }
+    .item-name{ font-size:13.5px; font-weight:600; color:var(--ink); }
+    .item-desc{ font-size:11.5px; color:#8a8378; line-height:1.4; margin-top:3px; }
+    .item-price{ font-size:13px; font-weight:700; color:var(--ink); margin-top:6px; }
+    .item-price .currency{ opacity:0.7; font-weight:500; margin-right:1px; }
+    .item-controls{ flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px; padding-top:2px; }
+    .add-btn{
+      background:#fff; border:1.5px solid var(--veg); color:var(--veg); font-weight:700; font-size:12px;
+      padding:7px 16px; border-radius:10px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.06);
+      position:relative; white-space:nowrap;
+    }
+    .add-btn.nonveg{ border-color:var(--nonveg); color:var(--nonveg); }
+    .add-btn.has-qty{ background:var(--veg); color:#fff; }
+    .add-btn.nonveg.has-qty{ background:var(--nonveg); color:#fff; }
+    .stepper{ display:flex; align-items:center; gap:0; border:1.5px solid var(--veg); border-radius:10px; overflow:hidden; }
+    .stepper.nonveg{ border-color:var(--nonveg); }
+    .stepper button{ background:var(--veg); color:#fff; border:none; width:26px; height:28px; font-size:14px; font-weight:700; cursor:pointer; }
+    .stepper.nonveg button{ background:var(--nonveg); }
+    .stepper .qty{ width:26px; text-align:center; font-weight:700; font-size:12.5px; background:#fff; height:28px; line-height:28px; }
+    .empty-state{ text-align:center; padding:50px 20px; color:#a39c8c; font-size:13px; }
+    .cart-bar{
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:12px;
+      height:54px;
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      background:var(--sage-deep);
+      color:#fff;
+      border-radius:14px;
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+      z-index:45;
+      cursor:pointer;
+    }
+    .cart-bar.show{ display:flex; }
+    .cart-bar-left{ font-size:12px; }
+    .cart-bar-left .n{ font-size:14px; font-weight:700; }
+    .cart-bar-right{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; }
+    .cart-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.35);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:.25s;
+      z-index:9998;
+    }
+    .cart-overlay.show{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+    .cart-drawer{
+      position:fixed;
+      left:50%;
+      bottom:calc((100vh - 780px)/2 + 12px);
+      width:390px;
+      max-width:calc(100vw - 20px);
+      max-height:78vh;
+      height:auto;
+      transform:translate(-50%,105%);
+      background:#fff;
+      border-radius:22px 22px 0 0;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      box-shadow:0 -10px 35px rgba(0,0,0,.25);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:.28s;
+      z-index:9999;
+    }
+    .cart-drawer.show{
+      transform:translate(-50%,0);
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+    .cart-drawer-handle{
+      width:50px;
+      height:5px;
+      margin:10px auto;
+      border-radius:999px;
+      background:#d9d9d9;
+    }
+    .cart-drawer-header{
+      padding:14px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid #ececec;
+    }
+    .cart-drawer-header h4{ margin:0; font-size:17px; font-weight:700; }
+    .cart-drawer-close{
+      background:none;
+      border:none;
+      cursor:pointer;
+      font-size:22px;
+      color:#999;
+    }
+    .cart-drawer-items{
+      overflow-y:auto;
+      padding:8px 18px;
+      flex:0 1 auto;
+      max-height:45vh;
+    }
+    .cart-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 0;
+      border-bottom:1px solid #f2f2f2;
+    }
+    .cart-row-name{ flex:1; font-size:14px; font-weight:600; }
+    .cart-row-price{ font-size:12px; color:#888; }
+    .qty-controls{ flex-shrink:0; }
+    .cart-drawer-footer{
+      flex-shrink:0;
+      padding:16px 18px 18px;
+      background:#fff;
+      border-top:1px solid #ececec;
+    }
+    .cart-total-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .cart-total-row .label{ color:#777; }
+    .cart-total-row .value{ font-size:22px; font-weight:700; }
+    .place-order-btn{
+      width:100%;
+      height:52px;
+      border:none;
+      border-radius:14px;
+      background:var(--sage-deep);
+      color:#fff;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .place-order-btn:hover{ transform:translateY(-1px); }
+    .place-order-btn:disabled{ opacity:.5; cursor:not-allowed; }
+    .clear-cart-link{
+      margin-top:12px;
+      text-align:center;
+      font-size:12px;
+      color:#c0392b;
+      cursor:pointer;
+    }
+    #specialRequestOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 55;
+      display: none !important;
+    }
+    #specialRequestOverlay.show {
+      display: block !important;
+    }
+    #specialRequestDrawer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 56;
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      max-height: 62%;
+      display: none !important;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.28s ease;
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.2);
+    }
+    #specialRequestDrawer.show {
+      display: flex !important;
+      transform: translateY(0);
+    }
+    #specialRequestDrawer .sr-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--line);
+      border-radius: 4px;
+      margin: 10px auto 4px;
+    }
+    #specialRequestDrawer .sr-header {
+      padding: 10px 18px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+    #specialRequestDrawer .sr-header h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      color: var(--ink);
+    }
+    #specialRequestDrawer .sr-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #8a8378;
+      padding: 4px 8px;
+    }
+    #specialRequestDrawer .sr-body {
+      padding: 14px 18px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    #specialRequestDrawer .sr-footer {
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--line);
+    }
+    .skip-order-link {
+      text-align: center;
+      font-size: 12px;
+      color: #8a8378;
+      margin-top: 10px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .skip-order-link:hover {
+      color: var(--sage-deep);
+    }
+    .special-request-textarea{
+      width:100%; min-height:100px; padding:12px 14px; border:1.5px solid var(--line);
+      border-radius:12px; font-family:inherit; font-size:13px; resize:vertical; outline:none; background:#fff;
+    }
+    .special-request-textarea:focus{ border-color:var(--sage-deep); }
+    .special-request-hint{ font-size:12px; color:#8a8378; margin-bottom:10px; line-height:1.4; }
+    .special-request-chips{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+    .sr-chip{ padding:5px 11px; border-radius:20px; background:var(--sage); border:1px solid var(--line); font-size:11px; font-weight:600; cursor:pointer; color:var(--sage-deep); }
+    .toast-container{ position:absolute; top:14px; left:14px; right:14px; z-index:99; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+    .toast{ background:var(--ink); color:#fff; padding:9px 16px; border-radius:20px; font-size:12px; box-shadow:0 8px 24px rgba(0,0,0,0.25); animation:toastIn 0.25s ease; pointer-events:auto; }
+    @keyframes toastIn{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+    .toast.hiding{ animation:toastOut 0.25s ease forwards; }
+    @keyframes toastOut{ from{opacity:1;} to{opacity:0; transform:translateY(-10px);} }
+    ::-webkit-scrollbar{ width:5px; }
+    ::-webkit-scrollbar-thumb{ background:#cfc9ba; border-radius:3px; }
+    @media (max-width:480px){
+      .app{ height:100vh; border-radius:0; max-width:100%; }
+      .login-box{ padding:24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay" id="loginOverlay">
+      <div class="login-box">
+        <div id="qrRequiredBox">
+          <div class="qr-pulse">📱</div>
+          <h2>Scan QR Code</h2>
+          <div class="sub">Please scan the QR code placed in your room to connect with our concierge.</div>
+          <div class="privacy-note">🔒 Each room has its own unique QR code — this links your chat &amp; orders to the correct room.</div>
+        </div>
+        <div id="loginFormBox" style="display:none;">
+          <div class="logo-icon">🏨</div>
+          <h2>ARIENA - The Boutique Hotel</h2>
+          <div class="sub">The Boutique Hotel · Room <span id="loginRoomNumber">—</span></div>
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+              <label for="guestName">Full Name</label>
+              <input type="text" id="guestName" placeholder="Enter your name" required autocomplete="name">
+              <div class="error-msg" id="nameError">Please enter your name</div>
+            </div>
+            <div class="input-group">
+              <label for="guestPhone">Phone Number</label>
+              <input type="tel" id="guestPhone" placeholder="Enter your phone number" required autocomplete="tel">
+              <div class="error-msg" id="phoneError">Please enter a valid phone number</div>
+            </div>
+            <button type="submit" class="btn-login" id="loginBtn">
+              <span id="loginBtnText">Enter &amp; Activate Bot</span>
+            </button>
+            <div class="privacy-note">🔒 Your details are secure and shared only with hotel staff.</div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="app-header">
+      <div class="brand-row">
+        <div>
+          <div class="brand-name">ARIENA </div>
+          <div class="brand-sub">The Boutique Hotel</div>
+        </div>
+        <span class="status-pill" id="statusPill">● Online</span>
+      </div>
+      <div class="room-row">
+        <div>
+          <div class="label">Your room</div>
+          <div class="room-number" id="roomNumberDisplay">—</div>
+        </div>
+        <span class="room-badge" id="roomStatusBadge">⏳ Loading</span>
+      </div>
+      <div style="margin-top:6px; font-size:11px; opacity:0.8; display:flex; gap:12px; flex-wrap:wrap;">
+        <span id="guestNameDisplay">👤 Not logged in</span>
+        <span id="guestPhoneDisplay">📱 —</span>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="view-tabs">
+      <div class="view-tab active" id="tabChat" onclick="switchView('chat')">💬 Concierge</div>
+      <div class="view-tab disabled" id="tabMenu" onclick="switchView('menu')">🍽️ Menu</div>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div class="chat-view" id="chatView">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message system">📱 Please scan the QR code in your room to get started.</div>
+      </div>
+      <div class="typing-indicator" id="typingIndicator">
+        <span>Bot is typing</span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="quick-replies" id="quickReplies">
+        <button class="quick-reply-btn" onclick="sendQuickReply('Water please')" disabled>💧 Water</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Towels please')" disabled>🛁 Towels</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Hairdryer required')" disabled>💨 Hairdryer</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Room cleaning')" disabled>🧹 Clean Room</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Iron needed')" disabled>🧺 Iron</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Extra bed')" disabled>🛏️ Extra Bed</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Maintenance')" disabled>🔧 Maintenance</button>
+        <button class="quick-reply-btn" onclick="sendQuickReply('Help')" disabled>🆘 Help</button>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Scan QR code first..." disabled />
+        <button onclick="sendMessage()" disabled>Send</button>
+      </div>
+    </div>
+
+    <!-- MENU VIEW -->
+    <div class="menu-view" id="menuView">
+      <div class="menu-toolbar">
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search for dishes..." oninput="renderMenu()">
+        </div>
+        <div class="filter-row">
+          <div class="veg-filter" id="filterVeg" onclick="toggleDietFilter('veg')">
+            <span class="veg-dot"></span> Veg
+          </div>
+          <div class="veg-filter" id="filterNonveg" onclick="toggleDietFilter('nonveg')">
+            <span class="nonveg-dot"></span> Non-Veg
+          </div>
+        </div>
+      </div>
+      <div class="cat-nav" id="catNav"></div>
+      <div class="menu-list" id="menuList"></div>
+      <div class="cart-bar" id="cartBar">
+        <div class="cart-bar-left"><span class="n" id="cartBarCount">0</span> items added</div>
+        <div class="cart-bar-right">View Cart · ₹<span id="cartBarTotal">0</span> ›</div>
+      </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-drawer" id="cartDrawer">
+      <div class="cart-drawer-handle"></div>
+      <div class="cart-drawer-header">
+        <h4>🛒 Your Order</h4>
+        <button class="cart-drawer-close" onclick="closeCart()">✕</button>
+      </div>
+      <div class="cart-drawer-items" id="cartDrawerItems"></div>
+      <div class="cart-drawer-footer">
+        <div class="cart-total-row">
+          <span class="label">Total</span>
+          <span class="value">₹<span id="cartDrawerTotal">0</span></span>
+        </div>
+        <button class="place-order-btn" id="placeOrderBtn" onclick="openSpecialRequestModal()">Place Order to Room</button>
+        <div class="clear-cart-link" onclick="clearCart()">Clear cart</div>
+      </div>
+    </div>
+
+    <!-- SPECIAL REQUEST MODAL -->
+    <div id="specialRequestOverlay" onclick="closeSpecialRequestModal()"></div>
+    <div id="specialRequestDrawer">
+      <div class="sr-handle"></div>
+      <div class="sr-header">
+        <h4>📝 Any Special Requirement?</h4>
+        <button class="sr-close" onclick="closeSpecialRequestModal()">✕</button>
+      </div>
+      <div class="sr-body">
+        <div class="special-request-hint">Let the kitchen know about allergies, spice level, or anything else before we send this order.</div>
+        <div class="special-request-chips">
+          <div class="sr-chip" onclick="appendSpecialRequest('Less spicy')">🌶️ Less spicy</div>
+          <div class="sr-chip" onclick="appendSpecialRequest('No onion/garlic')">🧅 No onion/garlic</div>
+          <div class="sr-chip" onclick="appendSpecialRequest('Nut allergy')">🥜 Nut allergy</div>
+          <div class="sr-chip" onclick="appendSpecialRequest('Extra spicy')">🔥 Extra spicy</div>
+        </div>
+        <textarea id="specialRequestInput" class="special-request-textarea" placeholder="e.g. Please make it less spicy, no coriander..."></textarea>
+      </div>
+      <div class="sr-footer">
+        <button class="place-order-btn" id="confirmOrderBtn" onclick="confirmPlaceOrder()">Confirm & Place Order</button>
+        <div class="skip-order-link" onclick="confirmPlaceOrder(true)">Skip — no special requirement</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================================
+    // 🔧 CONFIGURATION - UPDATE THIS URL
+    // ============================================================
+           //MUST CHANGE ONCE THE SCRIPT IS READY 
+  
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyeYp7i1jqcfGbY7Uv663dlrcsyE3WuxlaRoZhRESc_KihNqUcQXWObJ6kWKAEd5P4DMw/exec';
+
+    // ============================================================
+    // COMPLETE MENU DATA
+    // ============================================================
+    const MENU = [
+      { id:'salads', name:'Salads & Cold', icon:'🥗', items:[
+        {name:'Green Salad', price:225, veg:true, desc:'Garden-fresh tomato, radish, cucumber, carrot, onion, beetroot & lemon.'},
+        {name:'Macaroni Peanuts Salad', price:225, veg:true, desc:'Boiled macaroni & peanuts in tangy sauce with tomato and capsicum.'},
+        {name:'Russian Salad', price:255, veg:true, desc:'Potato, french beans, carrot, peas & pineapple in mayonnaise dressing.'},
+        {name:'Khatte Meethe Salad', price:275, veg:true, desc:'Julienne of fresh vegetables and pineapple in tangy lime dressing.'},
+        {name:'Aloo Papri Chaat', price:255, veg:true, desc:'Papri and potato with whipped curd, tamarind chutney, anar dana & sev.'},
+        {name:'Plain Curd', price:165, veg:true, desc:'Fresh house-set curd.'},
+        {name:'Choice of Raita', price:195, veg:true, desc:'Mixed, pineapple, fruit, boondi or mint.'},
+        {name:'Papad (Masala – Fried/Roasted)', price:95, veg:true, desc:''},
+        {name:'Papad (Plain Roasted)', price:55, veg:true, desc:''}
+      ]},
+      { id:'soups', name:'Hot Soup Pot', icon:'🍜', items:[
+        {name:'Cream of Soup', price:245, veg:true, desc:'Tomato, vegetable, mushroom or broccoli-almond, served veg-style.'},
+        {name:'Sweet Corn Soup (Veg)', price:255, veg:true, desc:'All-time favourite sweet corn soup with vegetables.'},
+        {name:'Sweet Corn Soup (Non-Veg)', price:275, veg:false, desc:'All-time favourite sweet corn soup with chicken.'},
+        {name:'Clear Soup (Veg)', price:235, veg:true, desc:'Clear broth soup with salt, pepper and chopped vegetables.'},
+        {name:'Clear Soup (Non-Veg)', price:255, veg:false, desc:'Clear broth soup with salt, pepper and shredded chicken.'},
+        {name:'Lemon & Coriander Soup (Veg)', price:245, veg:true, desc:'Semi-clear soup with prominent lemon & coriander notes.'},
+        {name:'Lemon & Coriander Soup (Non-Veg)', price:265, veg:false, desc:'Semi-clear soup with prominent lemon & coriander notes.'},
+        {name:'Hot n Sour Soup (Veg)', price:255, veg:true, desc:'Spicy Chinese soup with julienne vegetables and spices.'},
+        {name:'Hot n Sour Soup (Non-Veg)', price:275, veg:false, desc:'Spicy Chinese soup with julienne vegetables and spices.'},
+        {name:'Manchow Soup (Veg)', price:255, veg:true, desc:'Mildly spiced Chinese vegetable soup topped with crispy noodles.'},
+        {name:'Manchow Soup (Non-Veg)', price:275, veg:false, desc:'Mildly spiced Chinese soup topped with crispy noodles.'}
+      ]},
+      { id:'veg-starters', name:'Vegetarian Starters', icon:'🌿', items:[
+        {name:'Paneer Tikka Sandwich', price:295, veg:true, desc:'Clay-oven baked paneer with cheese, grilled.'},
+        {name:'Spinach Corn Sandwich', price:295, veg:true, desc:'Spinach purée cooked with corn & cheese, grilled.'},
+        {name:'Herb Cheese Toast', price:295, veg:true, desc:'Cheese toast spiced with herbs & bell pepper.'},
+        {name:'Paneer Kathi Roll', price:315, veg:true, desc:'Indian bread stuffed with spicy paneer filling.'},
+        {name:'Spiral Potato with Cajun Powder', price:325, veg:true, desc:'Skillfully spun potato rings, Cajun-spiced.'},
+        {name:'Cheese Puchka with Chilli Jam, Pesto & Burrata', price:355, veg:true, desc:'A playful reimagining of pani puri.'},
+        {name:'Tex Mex Nacho – Veg', price:375, veg:true, desc:'Baked nachos with pineapple salsa, sour cream & olive pesto.'}
+      ]},
+      { id:'nonveg-starters', name:'Non-Vegetarian Starters', icon:'🍗', items:[
+        {name:'Chicken Tikka Sandwich', price:345, veg:false, desc:'Clay-oven baked chicken with cheese, grilled.'},
+        {name:'Chicken & Cheese Sandwich', price:345, veg:false, desc:'Sliced chicken topped with vegetables & cheese.'},
+        {name:'Chicken Kathi Roll', price:345, veg:false, desc:'Indian bread stuffed with spicy chicken filling.'},
+        {name:'Torn Green Fresh Country Egg', price:295, veg:false, desc:'Boiled egg with lettuce & vinegar-mustard dressing.'},
+        {name:'Tex Mex Nacho – Non-Veg', price:395, veg:false, desc:'Baked nachos with chicken, salsa, sour cream & olive pesto.'}
+      ]},
+      { id:'pizza-pasta', name:'Pizza & Pasta', icon:'🍕', items:[
+        {name:'Aglio Olio Spaghetti', price:495, veg:true, desc:'Traditional spaghetti with garlic, olive oil, salt & pepper.'},
+        {name:"Mac 'n Cheese", price:495, veg:true, desc:'Macaroni in a rich cheddar cheese sauce.'},
+        {name:'Tomato Basil Penne', price:495, veg:true, desc:'Penne with garlic, tomato, mozzarella, parmesan & fresh basil.'},
+        {name:'Chicken Lasagna', price:595, veg:false, desc:'Layered lasagna with fennel pesto and fresh tomato salsa.'},
+        {name:'Malai Chicken Cannelloni', price:595, veg:false, desc:'Chicken & mushroom in creamy marsala sauce, rolled in lasagna sheets.'},
+        {name:'Veggies Delight Pizza', price:495, veg:true, desc:'Onion, mushroom, bell pepper, tomato, pineapple & jalapeño.'},
+        {name:'Classic Margherita Pizza', price:495, veg:true, desc:'Fresh mozzarella, tomato and garden basil.'},
+        {name:'Paneer Tikka Pizza', price:495, veg:true, desc:"Chef's signature paneer tikka topping."},
+        {name:'Chicken Tikka Pizza', price:595, veg:false, desc:"Chef's signature chicken tikka topping."},
+        {name:'Onion Capsicum Classic Pizza', price:495, veg:true, desc:'Onion, capsicum and tomato with mozzarella.'}
+      ]},
+      { id:'anticipation', name:'In Anticipation', icon:'🍢', items:[
+        {name:'Paneer Popcorn in Peri Peri', price:355, veg:true, desc:'Deep-fried paneer pops tossed in peri-peri sauce.'},
+        {name:'Mexican Croquettes', price:395, veg:true, desc:'High-protein croquettes with a chewy centre, served with dips.'},
+        {name:'Cottage Cheese Croquettes', price:395, veg:true, desc:"Chef's special cottage cheese croquettes."},
+        {name:'Mexican Coin', price:355, veg:true, desc:'Bread roundels topped with exotic veg & cheese, salamander-baked.'},
+        {name:'Chicken Salad Peppercorns', price:455, veg:false, desc:'Char-grilled chicken, capsicum & mushroom in yoghurt-lemon dressing.'},
+        {name:'Murg Tuktuk', price:455, veg:false, desc:'Shredded chicken in tamarind-mint chutney with onion & coriander.'}
+      ]},
+      { id:'charcoal-veg', name:'From the Charcoal Clay · Veg', icon:'🔥', items:[
+        {name:'Ariena Platter (Veg)', price:1055, veg:true, desc:'A combination of four vegetarian tandoor starters.'},
+        {name:'Jeera Mirch Ka Paneer', price:495, veg:true, desc:'Paneer marinated with crushed jeera & slit green chilly, tandoor-cooked.'},
+        {name:'Gilafi Paneer Seekh', price:495, veg:true, desc:'Mashed paneer, cheese & vegetables bound with spices, skewered.'},
+        {name:'Dakshini Paneer Tikka', price:445, veg:true, desc:'Paneer in a South-Indian onion, chilly, garlic & curry-leaf paste.'},
+        {name:'Shahi Paneer Tikka', price:495, veg:true, desc:'Cottage cheese marinated in yoghurt.'},
+        {name:'Kesaria Paneer Tikka', price:495, veg:true, desc:'Saffron-infused cottage cheese, lightly spiced, tandoor-cooked.'},
+        {name:'Paneer Shashlik Tikka', price:495, veg:true, desc:'Cottage cheese, onion, tomato & capsicum in mustard-yoghurt marinade.'},
+        {name:'Dahi Ke Kebab', price:495, veg:true, desc:'Grated paneer & mashed potato tikki stuffed with hung curd & spices.'},
+        {name:'Til Mil Tikka', price:495, veg:true, desc:'Sesame seed & cheese cooked in the clay oven.'},
+        {name:'Tawa Tamancha', price:495, veg:true, desc:"Assorted vegetables tawa-roasted in ghee with the chef's seasoning."},
+        {name:'Tandoori Malai Broccoli', price:495, veg:true, desc:'Broccoli marinated in cream & cashew paste, tandoor-roasted.'},
+        {name:'Tandoori Bharwan Aloo', price:455, veg:true, desc:'Potatoes stuffed with pulses & dry fruits, tandoor-cooked.'},
+        {name:'Vegetable Seekh Kebab', price:455, veg:true, desc:'Skewered vegetable mince with fresh herbs & spices.'},
+        {name:'Mushroom Firdosh Shots', price:495, veg:true, desc:'Mushroom stuffed with cheese sauce & anar.'}
+      ]},
+      { id:'charcoal-nonveg', name:'From the Charcoal Clay · Non-Veg', icon:'🔥', items:[
+        {name:'Jhinga Lasooni', price:1055, veg:false, desc:'Whole prawns marinated in curd, garlic & Indian spices, clay-cooked.'},
+        {name:'Fish Koliwada', price:675, veg:false, desc:'De-boned fish marinated in spicy gram-flour batter, deep-fried.'},
+        {name:'Tandoori Pomfret', price:995, veg:false, desc:'Whole pomfret laced with Indian spices, clay-cooked.'},
+        {name:'Fish Bagicha', price:695, veg:false, desc:'Boneless fish marinated in curd & Indian spices, clay-cooked.'},
+        {name:'Goan Fish Cafreal', price:695, veg:false, desc:'Tandoor-charred fish marinated with poppy seeds & coriander.'},
+        {name:'Fish on Toast', price:695, veg:false, desc:'Our signature fish with sesame seed.'},
+        {name:'Tandoori Hari Macchi', price:695, veg:false, desc:'Fish chunks in a green mint-flavoured paste, tandoor-cooked.'},
+        {name:'Lasooni Mahi Tikka', price:695, veg:false, desc:"Chef's special garlic fish tikka."},
+        {name:'Ariena Platter (Non-Veg)', price:1495, veg:false, desc:'Chicken, mutton, fish & prawns marinated with Punjabi spices.'},
+        {name:'Mutton Anglo Chop', price:795, veg:false, desc:'Mashed potato stuffed with mutton mince & cheese, pan-fried.'},
+        {name:'Tandoori Lamb Chops', price:795, veg:false, desc:'Lamb ribs in tamarind barbecue glaze with sweet-sour sauce.'},
+        {name:'Raunak-e-Seekh', price:795, veg:false, desc:"Chef's special mutton mince skewered kebab."},
+        {name:'Kalmi Kabab', price:655, veg:false, desc:'Chicken drums marinated in yoghurt & Indian spices, clay-cooked.'},
+        {name:'Murg Seena Kathi', price:655, veg:false, desc:'Chicken breast marinated in yoghurt, cream & spices, clay-cooked.'},
+        {name:'Murgh Chukandari Tikka', price:655, veg:false, desc:'Chicken in cream, egg & beetroot juice, finished in the clay oven.'},
+        {name:'Chicken Changezi', price:655, veg:false, desc:'Chicken with curry leaf, mustard seed & saffron.'},
+        {name:'Sajde Seekh Ke', price:655, veg:false, desc:"Chef's special stuffed chicken seekh kebab."},
+        {name:'Murgh Husmukh Tikka', price:655, veg:false, desc:'Chicken marinated in cashew-nut paste & aromatic herbs.'},
+        {name:'Tandoori Murgh', price:575, veg:false, desc:'Spring chicken marinated overnight to perfection.'},
+        {name:'Chilli Milli Murg Tikka', price:655, veg:false, desc:'Chicken marinated in tangy seasoning, charcoal-cooked.'},
+        {name:'Murgh Reshmi Kebab', price:655, veg:false, desc:'Chicken in mild spices, topped with caramel threads.'},
+        {name:'Chat-Pata Murgh Tikka', price:655, veg:false, desc:'The traditional tangy chicken tikka.'},
+        {name:'Murgh Chilli Kebab', price:655, veg:false, desc:'Chicken marinated in soya sauce, charcoal-cooked.'},
+        {name:'Tandoori Bharwan Tangri', price:655, veg:false, desc:'Chicken legs stuffed with dry fruits & keema, clay-cooked.'},
+        {name:'Murg Golden Kebab', price:675, veg:false, desc:'Boneless chicken tandoor-cooked in Indian spices.'},
+        {name:'Murg Jarga Tikka', price:675, veg:false, desc:"Chef's special chicken tikka."}
+      ]},
+      { id:'main-veg', name:'Indian Main Course · Veg', icon:'🍛', items:[
+        {name:'Paneer Lababdar', price:485, veg:true, desc:'Paneer, capsicum & tomato in rich onion-tomato gravy.'},
+        {name:'Palak Paneer', price:485, veg:true, desc:'Paneer cubes cooked in fresh spinach gravy.'},
+        {name:'Jeera Aloo', price:395, veg:true, desc:'Boiled potatoes fried with jeera & green chillies.'},
+        {name:'Veg Diwani Handi', price:455, veg:true, desc:'Mixed vegetables & paneer in creamy onion gravy.'},
+        {name:'Subz Bhuna', price:455, veg:true, desc:'Vegetables, mushroom, paneer & baby corn in a mawa-finished gravy.'},
+        {name:'Aaj Ki Subzi', price:425, veg:true, desc:"Today's fresh seasonal special vegetables."},
+        {name:'Khumb Makhan Palak', price:455, veg:true, desc:'Button mushrooms cooked in palak & tomato gravy.'},
+        {name:'Mughlai Palak', price:425, veg:true, desc:'Palak with almond & cashew paste in a rich Mughlai gravy.'},
+        {name:'Gobi Dolma', price:425, veg:true, desc:'Cauliflower cooked with onion, ginger, garlic & ground spices.'},
+        {name:'Baingan Ka Nazrana', price:425, veg:true, desc:'Clay-roasted brinjal mashed into bharta, cooked in Indian spices.'}
+      ]},
+      { id:'main-nonveg', name:'Indian Main Course · Non-Veg', icon:'🍛', items:[
+        {name:'Fish Amritsari', price:675, veg:false, desc:'Fish fillet marinated in lemon juice & ajwain, deep-fried.'},
+        {name:'Fish Moilee', price:675, veg:false, desc:'Fish cooked in coconut milk with southern spices & curry leaves.'},
+        {name:'Murgh Tikka Makhanwala', price:645, veg:false, desc:'Barbecued chicken in creamy tomato gravy, finished with fresh cream.'},
+        {name:'Murg Tariwala', price:595, veg:false, desc:'Light chicken curry with tomato & fresh coriander.'},
+        {name:'Murg Lababdar', price:645, veg:false, desc:'Chicken tikka in rich tomato-onion gravy with coriander.'},
+        {name:'Chooza Makhni', price:645, veg:false, desc:'Tandoori chicken simmered in tomato gravy with fenugreek & cream.'},
+        {name:'Murg Falaknama', price:645, veg:false, desc:'Royal chicken preparation with tomato, onion, capsicum & shahi jeera.'},
+        {name:'Gosht Saagwala', price:745, veg:false, desc:'Boneless lamb and spinach purée, a traditional favourite.'},
+        {name:'Kashmiri Mutton Korma', price:745, veg:false, desc:'Lamb in masala with a hint of Kashmiri red chilli.'}
+      ]},
+      { id:'dal', name:'Choice of Dal', icon:'🥣', items:[
+        {name:'Dal Tadka Wali', price:355, veg:true, desc:"Toor dal tempered in the chef's special seasoning."},
+        {name:'Dal Makhani', price:395, veg:true, desc:'Black lentils simmered overnight, finished with cream & butter.'}
+      ]},
+      { id:'awadhi', name:'Awadhi Kitchen Special', icon:'🍚', items:[
+        {name:'Gosht Biryani Dumpukht', price:655, veg:false, desc:'Traditional Awadhi-style mutton biryani.'},
+        {name:'Murgh Sofiyani Biryani', price:555, veg:false, desc:'Traditional Lucknowi-style chicken biryani.'},
+        {name:'Tarkari Chilman Biryani', price:425, veg:true, desc:'Traditional vegetable biryani.'},
+        {name:'Pulao Aap Ki Pasand', price:355, veg:true, desc:'Jeera, peas & paneer pulao.'},
+        {name:'Safed Basmati Chawal', price:325, veg:true, desc:'Fine-grained Dehradun basmati rice.'},
+        {name:'Mix Veg Khichdi', price:425, veg:true, desc:'Comforting mixed vegetable khichdi.'},
+        {name:'Masala Dal Khichdi', price:425, veg:true, desc:'Spiced dal khichdi.'}
+      ]},
+      { id:'breads', name:'Roti Aap Ki Pasand', icon:'🫓', items:[
+        {name:'Tandoori Roti', price:65, veg:true, desc:''},
+        {name:'Lachedar / Pudina Paratha', price:95, veg:true, desc:''},
+        {name:'Plain Naan', price:95, veg:true, desc:''},
+        {name:'Butter Naan', price:115, veg:true, desc:''},
+        {name:'Khasta Missi Roti', price:85, veg:true, desc:''},
+        {name:'Kulcha (Onion Chilli / Aloo / Cottage Cheese)', price:115, veg:true, desc:''},
+        {name:'Ulta Tawa Ka Paratha', price:155, veg:true, desc:''},
+        {name:'Roti Ki Tokri', price:275, veg:true, desc:'Assorted basket of baby naan, roti, paratha & missi.'},
+        {name:'Fulka (Tawa Roti)', price:55, veg:true, desc:''}
+      ]},
+      { id:'oriental-veg', name:'Ching-Chang-Chow · Veg', icon:'🥢', items:[
+        {name:'Dim Sum (Veg)', price:475, veg:true, desc:'Steamed dumplings with onion, capsicum, carrot & cabbage, spicy sauce.'},
+        {name:'American Jewel Corn', price:425, veg:true, desc:'Corn kernels tossed with ginger, garlic, chilli & coriander.'},
+        {name:'Chilly Veg', price:435, veg:true, desc:'Vegetable dumplings tossed in Chinese chilly-soya sauce.'},
+        {name:'Chilly Mushroom', price:435, veg:true, desc:'Mushroom tossed in Chinese chilly-soya sauce.'},
+        {name:'Chilly Paneer', price:475, veg:true, desc:'Paneer tossed in Chinese chilly-soya sauce.'}
+      ]},
+      { id:'oriental-nonveg', name:'Ching-Chang-Chow · Non-Veg', icon:'🥢', items:[
+        {name:'Dim Sum (Non-Veg)', price:625, veg:false, desc:'Steamed dumplings stuffed with cream cheese, chicken & bell-pepper sauce.'},
+        {name:'Chilly Chicken', price:595, veg:false, desc:'Diced chicken tossed with capsicum & onion in soya sauce.'},
+        {name:'Chicken Salt n Pepper', price:595, veg:false, desc:'Deep-fried chicken tossed with salt & pepper.'},
+        {name:'Drums of Heaven', price:625, veg:false, desc:'Batter-coated chicken winglets, deep-fried, tangy sauce.'},
+        {name:'Prawns of Your Choice', price:1055, veg:false, desc:'Salt & pepper, or chilli garlic style.'}
+      ]},
+      { id:'rice-noodles', name:'Fried Rice & Noodles', icon:'🍚', items:[
+        {name:'Fried Rice – Veg', price:385, veg:true, desc:'Schezwan, Shanghai, Eight Jewels or Mexican style.'},
+        {name:'Fried Rice – Non-Veg', price:425, veg:false, desc:'Schezwan, Shanghai, Eight Jewels or Mexican style.'},
+        {name:'Cheese Veg Fried Rice in Pineapple Boat', price:null, veg:true, desc:"Chef's creation — cheese & vegetable fried rice served in a pineapple boat."},
+        {name:'Hakka / Szechuan Noodle – Veg', price:395, veg:true, desc:'Tossed noodles with soya & Chinese seasoning, Hakka style.'},
+        {name:'Hakka / Szechuan Noodle – Non-Veg', price:455, veg:false, desc:'Tossed noodles with soya & Chinese seasoning, Hakka style.'}
+      ]},
+      { id:'international', name:'International Cuisine', icon:'🌍', items:[
+        {name:'Chicken Stroganoff', price:685, veg:false, desc:'Julienne chicken with mushroom, gherkins & shallot in creamy sauce.'},
+        {name:'Grilled Chicken', price:685, veg:false, desc:'Herb-marinated chicken in espagnole sauce, mash & garlic bread.'},
+        {name:'Grilled Fish in Lemon Butter Sauce', price:695, veg:false, desc:'Flour-coated fish in butter, pepper & rosemary, with sautéed veg.'},
+        {name:'Butter Garlic Shrimps', price:995, veg:false, desc:'Shrimps sautéed in butter & garlic, glazed vegetables & mash.'}
+      ]},
+      { id:'desserts', name:'Sweet Morsel', icon:'🍰', items:[
+        {name:'Choco Lava Mud Cake', price:355, veg:true, desc:'Warm chocolate cake with a molten centre.'},
+        {name:'Banana Bonanza', price:355, veg:true, desc:'A celebration of banana in dessert form.'},
+        {name:'Choco Fudge Brownie Ice Cream', price:355, veg:true, desc:'Fudgy brownie paired with ice cream.'},
+        {name:'Choice of Ice Cream', price:275, veg:true, desc:'Vanilla, strawberry, chocolate, butterscotch, pista or seasonal.'},
+        {name:'Fruit Salad with Cream', price:295, veg:true, desc:'Fresh seasonal fruit with cream.'},
+        {name:'Fruit Salad with Ice Cream', price:395, veg:true, desc:'Fresh seasonal fruit with ice cream.'},
+        {name:'Kulfi, Falooda, Rose Ice Cream', price:355, veg:true, desc:'A trio of classic Indian frozen desserts.'},
+        {name:'Tea with Cookies', price:125, veg:true, desc:''}
+      ]}
+    ];
+
+    // Assign stable ids
+    MENU.forEach((cat, ci) => cat.items.forEach((it, ii) => it.id = cat.id + '-' + ii));
+
+    const CATEGORIES = [
+      { id: 'all', name: 'All', icon: '🍽️' },
+      ...MENU.map(cat => ({ id: cat.id, name: cat.name, icon: cat.icon }))
+    ];
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let sessionId = 'session_' + Date.now();
+    let roomNumber = '';
+    let roomToken = '';
+    let guestName = '';
+    let guestPhone = '';
+    let isLoggedIn = false;
+    let isProcessing = false;
+    let isPlacingOrder = false;
+    let cart = {};
+    let activeCategory = 'all';
+    let dietFilter = null;
+
+    // ============================================================
+    // ✅ API CALL FUNCTION - NO PERMISSION REQUIRED!
+    // ============================================================
+    async function callAPI(action, data = {}) {
+  try {
+    // ✅ URL-encoded data (NO preflight)
+    const formData = new URLSearchParams();
+    formData.append('action', action);
+    
+    // Data ko JSON string mein convert karo
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined && value !== null) {
+        formData.append(key, JSON.stringify(value));
+      }
+    }
+    
+    console.log('📤 Calling API:', action);
+    
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded', // ✅ NO preflight!
+      },
+      body: formData.toString()
+    });
+    
+    const result = await response.json();
+    console.log('📥 API Response:', result);
+    return result;
+    
+  } catch (error) {
+    console.error('❌ API Error:', error);
+    return { success: false, error: error.message || 'Network error' };
+  }
+}
+
+    // ============================================================
+    // ✅ UPDATED SERVER CALL - Uses fetch API
+    // ============================================================
+function runServer(methodName, args, onSuccess, onError, timeoutMs) {
+  timeoutMs = timeoutMs || 15000;
+  let settled = false;
+
+  const timer = setTimeout(function() {
+    if (settled) return;
+    settled = true;
+    onError({ message: 'Server timeout. Please check your connection.' });
+  }, timeoutMs);
+
+  // Map method names to API actions
+  const actionMap = {
+    'logGuestLogin': 'login',
+    'notifyStaffOfLogin': 'notify',
+    'handleChatMessage': 'chat',
+    'verifyGuestStatus': 'verifyStatus'
+  };
+
+  const action = actionMap[methodName] || methodName;
+  let payload = { action };
+  
+  if (methodName === 'logGuestLogin') {
+    payload = { action: 'login', name: args[0], phone: args[1], room: args[2] };
+  } else if (methodName === 'handleChatMessage') {
+    // ✅ FIX: args[0] already has all the data
+    payload = args[0];
+  } else if (methodName === 'verifyGuestStatus') {
+    payload = { action: 'verifyStatus', room: args[0], name: args[1], phone: args[2] };
+  } else if (methodName === 'notifyStaffOfLogin') {
+    payload = { action: 'notify', name: args[0], phone: args[1], room: args[2] };
+  }
+const formData = new URLSearchParams();
+for (const [key, value] of Object.entries(payload)) {
+  if (value !== undefined && value !== null) {
+    formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+  }
+}
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('HTTP error! status: ' + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    if (data && data.success !== false) {
+      onSuccess(data);
+    } else {
+      onError({ message: data?.error || 'Server error' });
+    }
+  })
+  .catch(error => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    onError({ message: error.message || 'Network error' });
+  });
+} 
+    
+    
+    // ============================================================
+    // TOASTS
+    // ============================================================
+    function showToast(message, icon) {
+      icon = icon || '📌';
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = icon + '  ' + message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 250);
+      }, 2200);
+    }
+
+    // ============================================================
+    // CLOSE ALL OVERLAYS
+    // ============================================================
+    function closeAllOverlays() {
+      const overlay = document.getElementById('cartOverlay');
+      const drawer = document.getElementById('cartDrawer');
+      const srOverlay = document.getElementById('specialRequestOverlay');
+      const srDrawer = document.getElementById('specialRequestDrawer');
+      
+      if (overlay) overlay.classList.remove('show');
+      if (drawer) drawer.classList.remove('show');
+      if (srOverlay) srOverlay.classList.remove('show');
+      if (srDrawer) srDrawer.classList.remove('show');
+    }
+
+    // ============================================================
+    // LOGIN HANDLING
+    // ============================================================
+    function handleLogin(e) {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('guestName');
+      const phoneInput = document.getElementById('guestPhone');
+      const nameError = document.getElementById('nameError');
+      const phoneError = document.getElementById('phoneError');
+      const loginBtn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('loginBtnText');
+
+      nameInput.classList.remove('error');
+      phoneInput.classList.remove('error');
+      nameError.classList.remove('show');
+      phoneError.classList.remove('show');
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      let isValid = true;
+
+      if (!name || name.length < 2) {
+        nameInput.classList.add('error');
+        nameError.classList.add('show');
+        isValid = false;
+      }
+
+      if (!phone || phone.length < 8 || !/^[\+\d\s\-\(\)]{8,20}$/.test(phone)) {
+        phoneInput.classList.add('error');
+        phoneError.classList.add('show');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+      if (loginBtn.disabled) return;
+
+      loginBtn.disabled = true;
+      btnText.innerHTML = '<span class="spinner"></span> Verifying...';
+
+      runServer('logGuestLogin', [name, phone, roomNumber], function(response) {
+        loginBtn.disabled = false;
+        if (response && response.success) {
+          guestName = name;
+          guestPhone = phone;
+          isLoggedIn = true;
+
+          localStorage.setItem('guestName', guestName);
+          localStorage.setItem('guestPhone', guestPhone);
+          localStorage.setItem('guestRoom', roomNumber);
+
+          document.getElementById('guestNameDisplay').textContent = '👤 ' + guestName;
+          document.getElementById('guestPhoneDisplay').textContent = '📱 ' + guestPhone;
+          document.getElementById('loginOverlay').classList.add('hidden');
+
+          const messageInput = document.getElementById('messageInput');
+          messageInput.disabled = false;
+          messageInput.placeholder = 'Type your message...';
+          messageInput.focus();
+
+          document.querySelectorAll('.quick-reply-btn').forEach(b => b.disabled = false);
+          document.getElementById('tabMenu').classList.remove('disabled');
+          document.querySelector('.chat-input button').disabled = false;
+
+          document.getElementById('chatMessages').innerHTML = '';
+          addMessage('✅ Welcome, ' + guestName + '! You\'re now connected from Room ' + roomNumber + '.', 'bot');
+          addMessage('🏨 How can I assist you today? Feel free to ask about towels, room service, housekeeping, or anything else!', 'bot');
+
+          showToast('Welcome ' + guestName + '! Bot activated.', '✅');
+          notifyStaffLogin(guestName, guestPhone, roomNumber);
+
+        } else {
+          btnText.textContent = 'Enter & Activate Bot';
+          showToast('❌ ' + (response && response.error || 'Login failed. Please try again.'), '❌');
+        }
+      }, function(error) {
+        loginBtn.disabled = false;
+        btnText.textContent = 'Enter & Activate Bot';
+        showToast('❌ ' + (error.message || 'Server error. Please try again.'), '❌');
+      });
+    }
+
+    function notifyStaffLogin(name, phone, room) {
+      runServer('notifyStaffOfLogin', [name, phone, room], function(response) {
+        console.log('Staff notification sent:', response);
+      }, function(error) {
+        console.warn('Staff notification failed:', error);
+      }, 10000);
+    }
+
+    // ============================================================
+    // VIEW SWITCH
+    // ============================================================
+    function switchView(view) {
+      if (!document.getElementById('catNav').innerHTML) buildCatNav();
+      if (view === 'menu' && !isLoggedIn) {
+        showToast('Please login first to access the menu.', '🔐');
+        return;
+      }
+
+      closeAllOverlays();
+
+      const chatTab = document.getElementById('tabChat');
+      const menuTab = document.getElementById('tabMenu');
+      const chatView = document.getElementById('chatView');
+      const menuView = document.getElementById('menuView');
+
+      if (view === 'menu') {
+        chatTab.classList.remove('active'); menuTab.classList.add('active');
+        chatView.style.display = 'none'; menuView.style.display = 'flex';
+        if (!document.getElementById('catNav').innerHTML) buildCatNav();
+        renderMenu();
+      } else {
+        menuTab.classList.remove('active'); chatTab.classList.add('active');
+        menuView.style.display = 'none'; chatView.style.display = 'flex';
+      }
+    }
+
+    // ============================================================
+    // CATEGORY NAV
+    // ============================================================
+    function buildCatNav() {
+      const nav = document.getElementById('catNav');
+      nav.innerHTML = CATEGORIES.map(cat =>
+        `<div class="cat-chip ${cat.id === 'all' ? 'active' : ''}" data-cat="${cat.id}" onclick="setCategory('${cat.id}', event)">${cat.icon} ${cat.name}</div>`
+      ).join('');
+    }
+
+    function setCategory(catId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      
+      activeCategory = catId;
+
+      document.querySelectorAll('.cat-chip').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-cat') === catId);
+      });
+
+      closeCart();
+      renderMenu();
+      updateCartBar();
+
+      if (catId !== 'all') {
+        const section = document.getElementById('sec-' + catId);
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function toggleDietFilter(kind) {
+      closeCart();
+      dietFilter = (dietFilter === kind) ? null : kind;
+      document.getElementById('filterVeg').classList.toggle('active-veg', dietFilter === 'veg');
+      document.getElementById('filterNonveg').classList.toggle('active-nonveg', dietFilter === 'nonveg');
+      renderMenu();
+    }
+
+    // ============================================================
+    // RENDER MENU
+    // ============================================================
+    function renderMenu() {
+      const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const list = document.getElementById('menuList');
+      let html = '';
+      let anyResults = false;
+
+      MENU.forEach(cat => {
+        if (activeCategory !== 'all' && activeCategory !== cat.id) return;
+
+        const items = cat.items.filter(it => {
+          if (dietFilter === 'veg' && !it.veg) return false;
+          if (dietFilter === 'nonveg' && it.veg) return false;
+          if (query && !it.name.toLowerCase().includes(query) && !it.desc.toLowerCase().includes(query)) return false;
+          return true;
+        });
+        if (items.length === 0) return;
+        anyResults = true;
+
+        html += `<div class="menu-section" id="sec-${cat.id}">
+          <div class="menu-section-title">${cat.icon} ${cat.name} <span class="count">${items.length} items</span></div>`;
+
+        items.forEach(it => {
+          const qty = cart[it.id] || 0;
+          const hasPrice = typeof it.price === 'number';
+          html += `
+            <div class="item-card">
+              <div class="item-main">
+                <div class="item-top">
+                  <span class="${it.veg ? 'veg-dot' : 'nonveg-dot'}"></span>
+                  <span class="item-name">${it.name}</span>
+                </div>
+                ${it.desc ? `<div class="item-desc">${it.desc}</div>` : ''}
+                <div class="item-price">${hasPrice ? `<span class="currency">₹</span>${it.price}` : `<span style="color:#a39c8c; font-weight:600; font-size:11.5px;">Ask staff for price</span>`}</div>
+              </div>
+              <div class="item-controls">
+                ${!hasPrice
+                  ? ''
+                  : qty > 0
+                    ? `<div class="stepper ${it.veg ? '' : 'nonveg'}">
+                        <button onclick="changeQty('${it.id}', -1)">−</button>
+                        <span class="qty">${qty}</span>
+                        <button onclick="changeQty('${it.id}', 1)">+</button>
+                      </div>`
+                    : `<button class="add-btn ${it.veg ? '' : 'nonveg'}" onclick="changeQty('${it.id}', 1)">ADD</button>`
+                }
+              </div>
+            </div>`;
+        });
+        html += `</div>`;
+      });
+
+      if (!anyResults) {
+        html = `<div class="empty-state">🔍 No dishes match your search.<br>Try a different keyword or clear filters.</div>`;
+      }
+      list.innerHTML = html;
+      updateCartBar();
+    }
+
+    // ============================================================
+    // CART LOGIC
+    // ============================================================
+    function findItemById(id) {
+      for (const cat of MENU) {
+        for (const it of cat.items) {
+          if (it.id === id) return it;
+        }
+      }
+      return null;
+    }
+
+    function cleanupCart() {
+      Object.keys(cart).forEach(id => {
+        const item = findItemById(id);
+        if (!item || !cart[id] || cart[id] <= 0 || isNaN(cart[id])) {
+          delete cart[id];
+        }
+      });
+    }
+
+    function changeQty(id, delta) {
+      if (!isLoggedIn) { showToast('Please login first.', '🔐'); return; }
+      const current = cart[id] || 0;
+      const next = current + delta;
+      if (next <= 0) {
+        delete cart[id];
+      } else {
+        cart[id] = next;
+      }
+      cleanupCart();
+      const item = findItemById(id);
+      if (delta > 0 && item) showToast(item.name + ' added', '✅');
+      renderMenu();
+      renderCartDrawer();
+      updateCartBar();
+    }
+
+    function cartCount() {
+      return Object.keys(cart).reduce((total, id) => {
+        const item = findItemById(id);
+        if (!item) return total;
+        return total + (cart[id] || 0);
+      }, 0);
+    }
+
+    function cartTotal() {
+      let total = 0;
+      Object.keys(cart).forEach(id => {
+        const item = findItemById(id);
+        if (item && typeof item.price === 'number') total += item.price * cart[id];
+      });
+      return total;
+    }
+
+    function updateCartBar() {
+      const bar = document.getElementById('cartBar');
+      const count = cartCount();
+      if (count > 0) {
+        bar.classList.add('show');
+        document.getElementById('cartBarCount').textContent = count;
+        document.getElementById('cartBarTotal').textContent = cartTotal();
+      } else {
+        bar.classList.remove('show');
+      }
+    }
+
+    function clearCart() {
+      cart = {};
+      renderMenu();
+      renderCartDrawer();
+      closeCart();
+      showToast('Cart cleared', '🧹');
+    }
+
+    // ============================================================
+    // CART DRAWER FUNCTIONS
+    // ============================================================
+    function openCart() {
+      cleanupCart();
+
+      const count = cartCount();
+      if (count === 0) {
+        showToast('Cart is empty! Add some items first.', '🛒');
+        return;
+      }
+
+      renderCartDrawer();
+
+      const overlay = document.getElementById('cartOverlay');
+      const drawer = document.getElementById('cartDrawer');
+
+      overlay.style.display = "block";
+      drawer.style.visibility = "visible";
+      drawer.style.opacity = "1";
+      drawer.style.pointerEvents = "auto";
+
+      overlay.classList.add("show");
+      drawer.classList.add("show");
+    }
+
+    function closeCart() {
+      const overlay = document.getElementById('cartOverlay');
+      const drawer = document.getElementById('cartDrawer');
+
+      overlay.classList.remove("show");
+      drawer.classList.remove("show");
+
+      overlay.style.display = "none";
+      drawer.style.visibility = "hidden";
+      drawer.style.opacity = "0";
+      drawer.style.pointerEvents = "none";
+    }
+
+    function renderCartDrawer() {
+      const wrap = document.getElementById('cartDrawerItems');
+      const ids = Object.keys(cart);
+      if (ids.length === 0) {
+        wrap.innerHTML = `<div class="empty-state">Your cart is empty.<br>Add something delicious from the menu!</div>`;
+      } else {
+        wrap.innerHTML = ids.map(id => {
+          const item = findItemById(id);
+          if (!item) return '';
+          const qty = cart[id];
+          return `
+            <div class="cart-row">
+              <div style="flex:1;">
+                <div class="cart-row-name">${item.name}</div>
+                <div class="cart-row-price">₹${item.price} each</div>
+              </div>
+              <div class="stepper ${item.veg ? '' : 'nonveg'}">
+                <button onclick="changeQty('${id}', -1)">−</button>
+                <span class="qty">${qty}</span>
+                <button onclick="changeQty('${id}', 1)">+</button>
+              </div>
+            </div>`;
+        }).join('');
+      }
+      document.getElementById('cartDrawerTotal').textContent = cartTotal();
+      document.getElementById('placeOrderBtn').disabled = ids.length === 0;
+    }
+
+    // ============================================================
+    // SPECIAL REQUEST MODAL
+    // ============================================================
+    function openSpecialRequestModal() {
+      const ids = Object.keys(cart);
+      if (ids.length === 0) { showToast('Your cart is empty.', '⚠️'); return; }
+      if (!isLoggedIn) { showToast('Please login first.', '🔐'); return; }
+      closeCart();
+      document.getElementById('specialRequestInput').value = '';
+      document.getElementById('specialRequestOverlay').classList.add('show');
+      document.getElementById('specialRequestDrawer').classList.add('show');
+    }
+
+    function closeSpecialRequestModal() {
+      document.getElementById('specialRequestOverlay').classList.remove('show');
+      document.getElementById('specialRequestDrawer').classList.remove('show');
+    }
+
+    function appendSpecialRequest(text) {
+      const input = document.getElementById('specialRequestInput');
+      const existing = input.value.trim();
+      input.value = existing ? existing + ', ' + text : text;
+    }
+
+    function confirmPlaceOrder(skip) {
+      if (isPlacingOrder) return;
+      const note = skip ? '' : document.getElementById('specialRequestInput').value.trim();
+      closeSpecialRequestModal();
+      placeOrder(note);
+    }
+
+    function placeOrder(specialRequest) {
+      const ids = Object.keys(cart);
+      if (ids.length === 0) { showToast('Your cart is empty.', '⚠️'); return; }
+      if (!isLoggedIn) { showToast('Please login first.', '🔐'); return; }
+      if (isPlacingOrder) return;
+      isPlacingOrder = true;
+
+      const orderItems = ids.map(id => {
+        const item = findItemById(id);
+        return { name: item.name, price: item.price, qty: cart[id] };
+      });
+      const total = cartTotal();
+      const itemsHtml = orderItems.map(i => `• ${i.name} <span style="opacity:0.65">x${i.qty}</span>`).join('<br>');
+      const itemsList = orderItems.map(i => `${i.name} x${i.qty}`).join(', ');
+
+      cart = {};
+      renderMenu();
+      switchView('chat');
+
+      const receiptId = 'receipt_' + Date.now();
+      addReceiptMessage(receiptId, `
+        <div style="font-weight:700; margin-bottom:6px;">🧾 Order Summary — Room ${roomNumber}</div>
+        <div style="font-size:12.5px; line-height:1.6;">${itemsHtml}</div>
+        ${specialRequest ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08); font-size:12px; color:#7a5b1e;">📝 Note: ${specialRequest}</div>` : ''}
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08); display:flex; justify-content:space-between; font-weight:700;">
+          <span>Total</span><span>₹${total}</span>
+        </div>
+        <div id="${receiptId}-status" style="margin-top:6px; font-size:12px; color:#8a8378;">⏳ Sending to the kitchen...</div>
+      `);
+
+      const payload = {
+        action: 'order',
+        sessionId: sessionId,
+        roomNumber: String(roomNumber),
+        roomToken: roomToken,
+        guestName: guestName,
+        guestPhone: guestPhone,
+        items: orderItems,
+        total: total,
+        specialRequest: specialRequest || ''
+      };
+
+      showTyping();
+      runServer('handleChatMessage', [payload], function(response) {
+        hideTyping();
+        isPlacingOrder = false;
+        if (response && response.success) {
+        updateReceiptStatus(  receiptId,
+  `✅ Your order has been noted: ${itemsList}. It will arrive at Room ${roomNumber} shortly.<br><br>
+   🧾 <strong>Extra 5% GST will be added to your bill.</strong>`,
+  true
+);
+        } else {
+          updateReceiptStatus(receiptId, '❌ ' + ((response && response.error) || 'Failed to place order. Please try again or ask at the front desk.'), false);
+        }
+      }, function(error) {
+        hideTyping();
+        isPlacingOrder = false;
+        updateReceiptStatus(receiptId, '❌ ' + (error.message || 'Failed to place order. Please try again or ask at the front desk.'), false);
+      });
+    }
+
+    function addReceiptMessage(id, innerHtml) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'message bot';
+      div.id = id;
+      div.innerHTML = innerHtml + `<span class="timestamp">${new Date().toLocaleTimeString()}</span>`;
+      messagesDiv.appendChild(div);
+      scrollToBottom();
+    }
+
+    function updateReceiptStatus(id, statusHtml, success) {
+      const statusEl = document.getElementById(id + '-status');
+      if (!statusEl) { addMessage(statusHtml, success ? 'bot' : 'system'); return; }
+      statusEl.style.color = success ? '#2e7d46' : '#b3413a';
+      statusEl.innerHTML = statusHtml;
+      scrollToBottom();
+    }
+
+    // ============================================================
+    // CHAT FUNCTIONS
+    // ============================================================
+    function scrollToBottom() {
+      const messages = document.getElementById('chatMessages');
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addMessage(text, type, timestamp) {
+      timestamp = timestamp || new Date().toLocaleTimeString();
+      const messagesDiv = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ' + type;
+      messageDiv.innerHTML = text.replace(/\n/g, '<br>') + `<span class="timestamp">${timestamp}</span>`;
+      messagesDiv.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function showTyping() { document.getElementById('typingIndicator').style.display = 'block'; scrollToBottom(); }
+    function hideTyping() { document.getElementById('typingIndicator').style.display = 'none'; }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      if (!message || isProcessing) return;
+      if (!isLoggedIn) { showToast('Please login first.', '🔐'); return; }
+      addMessage(message, 'user');
+      input.value = '';
+      input.focus();
+      processMessage(message);
+    }
+
+    function sendQuickReply(text) {
+      if (isProcessing) return;
+      if (!isLoggedIn) { showToast('Please login first.', '🔐'); return; }
+      addMessage(text, 'user');
+      processMessage(text);
+    }
+
+    function processMessage(text) {
+      isProcessing = true;
+      showTyping();
+      const payload = {
+        action: 'chat',
+        sessionId: sessionId,
+        roomNumber: String(roomNumber),
+        roomToken: roomToken,
+        guestName: guestName,
+        guestPhone: guestPhone,
+        text: text
+      };
+      runServer('handleChatMessage', [payload], function(response) {
+        hideTyping(); isProcessing = false;
+        if (response && response.success) {
+          addMessage(response.reply, 'bot');
+          if (response.needsHuman) {
+            setTimeout(() => addMessage('📞 A staff member has been notified. They will contact you in Room ' + roomNumber + ' shortly.', 'system'), 1200);
+          }
+        } else if (response && response.error) {
+          addMessage('❌ ' + response.error, 'system');
+        } else {
+          addMessage('❌ No response from server. Please try again.', 'system');
+        }
+      }, function(error) {
+        hideTyping(); isProcessing = false;
+        addMessage('❌ ' + (error.message || 'Unknown error'), 'system');
+      });
+    }
+
+    // ============================================================
+    // ROOM VERIFICATION
+    // ============================================================
+    function showQrRequiredScreen() {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('qrRequiredBox').style.display = 'block';
+      document.getElementById('loginFormBox').style.display = 'none';
+      document.getElementById('messageInput').disabled = true;
+      document.getElementById('messageInput').placeholder = 'Scan QR code first...';
+      document.querySelectorAll('.quick-reply-btn').forEach(b => b.disabled = true);
+      document.getElementById('tabMenu').classList.add('disabled');
+      document.querySelector('.chat-input button').disabled = true;
+      document.getElementById('chatMessages').innerHTML = '';
+      addMessage('📱 Please scan the QR code in your room to get started.', 'system');
+    }
+
+    function onVerified(rNumber) {
+      roomNumber = rNumber;
+      document.getElementById('roomNumberDisplay').textContent = roomNumber;
+      document.getElementById('roomStatusBadge').textContent = '✅ Verified';
+      document.getElementById('loginRoomNumber').textContent = roomNumber;
+
+      const savedName = localStorage.getItem('guestName');
+      const savedPhone = localStorage.getItem('guestPhone');
+      const savedRoom = localStorage.getItem('guestRoom');
+
+      if (savedName && savedPhone && savedRoom === roomNumber) {
+        showToast('🔍 Verifying guest status...', '⏳');
+
+        runServer('verifyGuestStatus', [roomNumber, savedName, savedPhone], function(response) {
+          if (response && response.success && response.isActive) {
+            guestName = savedName;
+            guestPhone = savedPhone;
+            isLoggedIn = true;
+
+            document.getElementById('guestNameDisplay').textContent = '👤 ' + guestName;
+            document.getElementById('guestPhoneDisplay').textContent = '📱 ' + guestPhone;
+            document.getElementById('loginOverlay').classList.add('hidden');
+
+            const messageInput = document.getElementById('messageInput');
+            messageInput.disabled = false;
+            messageInput.placeholder = 'Type your message...';
+            document.querySelector('.chat-input button').disabled = false;
+            document.querySelectorAll('.quick-reply-btn').forEach(b => b.disabled = false);
+            document.getElementById('tabMenu').classList.remove('disabled');
+
+            document.getElementById('chatMessages').innerHTML = '';
+            addMessage('✅ Welcome back, ' + guestName + '!', 'bot');
+            addMessage('🏨 How can I assist you today?', 'bot');
+            showToast('Welcome back ' + guestName + '!', '👋');
+          } else {
+            localStorage.removeItem('guestName');
+            localStorage.removeItem('guestPhone');
+            localStorage.removeItem('guestRoom');
+            localStorage.removeItem('guestFromToken');
+
+            showToast('⚠️ Your previous session has ended. Please login again.', '⚠️');
+            showLoginScreen();
+          }
+        }, function(error) {
+          console.warn('Guest verification failed:', error);
+          showToast('⚠️ Could not verify your session. Please login again.', '⚠️');
+          showLoginScreen();
+        });
+
+      } else {
+        showLoginScreen();
+      }
+    }
+
+    function showLoginScreen() {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('qrRequiredBox').style.display = 'none';
+      document.getElementById('loginFormBox').style.display = 'block';
+      document.getElementById('messageInput').disabled = true;
+      document.getElementById('messageInput').placeholder = 'Please login first...';
+      document.querySelectorAll('.quick-reply-btn').forEach(b => b.disabled = true);
+      document.getElementById('tabMenu').classList.add('disabled');
+      document.querySelector('.chat-input button').disabled = true;
+      document.getElementById('chatMessages').innerHTML = '';
+      addMessage('🔐 Please enter your name and phone number to activate the concierge.', 'system');
+    }
+
+    function onVerifyFailed(msg) {
+      document.getElementById('roomStatusBadge').textContent = '❌ Invalid';
+      document.getElementById('messageInput').placeholder = 'Invalid QR code';
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('qrRequiredBox').style.display = 'block';
+      document.getElementById('loginFormBox').style.display = 'none';
+      document.getElementById('chatMessages').innerHTML = '';
+      addMessage('❌ ' + (msg || 'Invalid or expired QR code.'), 'system');
+      addMessage('📱 Please scan the QR code in your room again.', 'bot');
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    function init() {
+      const cartBar = document.getElementById('cartBar');
+      if (cartBar) {
+        const newCartBar = cartBar.cloneNode(true);
+        cartBar.parentNode.replaceChild(newCartBar, cartBar);
+        newCartBar.addEventListener('click', function(e) {
+          console.log("CART BAR CLICKED");
+          e.stopPropagation();
+          openCart();
+        });
+      }
+
+      if (window.__ROOM_INFO && window.__ROOM_INFO.verified) {
+        roomToken = window.__ROOM_INFO.token;
+        localStorage.setItem('roomNumber', window.__ROOM_INFO.roomNumber);
+        localStorage.setItem('roomToken', roomToken);
+        localStorage.setItem('roomFromToken', 'true');
+        onVerified(window.__ROOM_INFO.roomNumber);
+        return;
+      }
+      closeCart();
+      detectRoomFromURL();
+    }
+
+   function detectRoomFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+
+  if (token) {
+    document.getElementById('roomStatusBadge').textContent = '⏳ Verifying...';
+    document.getElementById('chatMessages').innerHTML = '';
+    addMessage('🔍 Verifying your room access...', 'bot');
+    
+    // ✅ GET request - CORS allowed!
+    fetch(API_URL + '?action=verify&token=' + encodeURIComponent(token))
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(response => {
+        console.log('📥 Verification response:', response);
+        if (response && response.success) {
+          roomToken = token;
+          localStorage.setItem('roomNumber', response.roomNumber);
+          localStorage.setItem('roomToken', token);
+          localStorage.setItem('roomFromToken', 'true');
+          onVerified(response.roomNumber);
+        } else {
+          onVerifyFailed(response && response.error);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Fetch error:', error);
+        document.getElementById('roomStatusBadge').textContent = '❌ Error';
+        document.getElementById('chatMessages').innerHTML = '';
+        addMessage('❌ Error: ' + (error.message || 'Failed to verify token'), 'system');
+        
+        // ✅ FALLBACK - POST method
+        fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: 'verify', token: token })
+        })
+        .then(res => res.json())
+        .then(response => {
+          if (response && response.success) {
+            roomToken = token;
+            localStorage.setItem('roomNumber', response.roomNumber);
+            localStorage.setItem('roomToken', token);
+            localStorage.setItem('roomFromToken', 'true');
+            onVerified(response.roomNumber);
+          } else {
+            onVerifyFailed(response && response.error);
+          }
+        })
+        .catch(err => {
+          onVerifyFailed('Cannot connect to server. Please check your internet.');
+        });
+      });
+    return;
+  }
+
+  localStorage.removeItem('roomToken');
+  localStorage.removeItem('roomNumber');
+  localStorage.removeItem('roomFromToken');
+  document.getElementById('roomStatusBadge').textContent = '❌ No Token';
+  showQrRequiredScreen();
+}
+
+    window.onload = init;
+  </script>
+</body>
+</html>
